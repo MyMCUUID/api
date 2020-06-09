@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3"
 
 services:
   redis:
@@ -11,4 +11,4 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASSWORD=
     ports:
-      - 8080:3985
+      - 3985:8080
