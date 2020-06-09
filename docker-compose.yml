@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  redis:
+    image: 'redis:latest'
+
+  api:
+    image: mymcuu.id/api:latest
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+    ports:
+      - 8080:3985
