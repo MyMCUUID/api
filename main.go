@@ -9,7 +9,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"image/png"
-	"log"
 	"mymcuu.id/api/mojang"
 	"net/http"
 )
@@ -105,7 +104,7 @@ func GetHeadFromUUID(w http.ResponseWriter, r *http.Request){
 func main(){
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		//log.Fatal("Error loading .env file")
 	}
 	SetupRedis()
 	r := mux.NewRouter()
