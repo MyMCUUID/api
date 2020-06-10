@@ -72,11 +72,10 @@ func GetUUIDFromUsername(username string) (*UUIDResponse, error) {
 	return nil, fmt.Errorf("no such player")
 }
 
-func GetHeadFromUUID(uuid string) (*image2.Image, error) {
+func GetProfileFromUUID(uuid string) (*ProfileResponse, error) {
 	if len(uuid) < 1 {
 		return nil, fmt.Errorf("invalid uuid")
 	}
-	fmt.Print()
 	request, err := http.NewRequest("GET", fmt.Sprintf("https://sessionserver.mojang.com/session/minecraft/profile/%s", uuid), nil)
 	request.Header.Set("User-Agent", "MyMCUUID-API")
 	resp, err := client.Do(request)
@@ -92,6 +91,10 @@ func GetHeadFromUUID(uuid string) (*image2.Image, error) {
 	if err != nil {
 		return nil, err
 	}
+	return &profile, nil
+}
+
+func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
 	var texture *TextureInformation
 	for _, val := range profile.Properties {
 		if val.Name == "textures" {
@@ -120,6 +123,18 @@ func GetHeadFromUUID(uuid string) (*image2.Image, error) {
 		return &aImage, nil
 	}
 	return nil, fmt.Errorf("something went wrong")
+}
+
+func GetHeadFromUUID(uuid string) (*image2.Image, error) {
+	profile, err := GetProfileFromUUID(uuid)
+	if err != nil {
+		return nil, err
+	}
+	image, err := GetHeadFromProfile(*profile)
+	if err != nil {
+		return nil, err
+	}
+	return image, nil
 }
 
 func GetImage(imageURL string) (io.ReadCloser, error) {

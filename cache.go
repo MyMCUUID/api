@@ -18,12 +18,13 @@ func SetupRedis(){
 	})
 }
 
-func StoreData(ctx context.Context, username string, response string) error {
+func StoreData(ctx context.Context, username string, uuid string, response string) error {
 	client.Set(ctx, fmt.Sprintf("player:%s", username), response, time.Hour * 24)
+	client.Set(ctx, fmt.Sprintf("uuid:%s", uuid), response, time.Hour * 24)
 	return nil
 }
 
-func HasData(ctx context.Context, username string) (bool, error) {
+func HasDataFromUsername(ctx context.Context, username string) (bool, error) {
 	value, err := client.Exists(ctx, fmt.Sprintf("player:%s", username)).Result()
 	if err == redis.Nil {
 		return false, nil
@@ -36,8 +37,31 @@ func HasData(ctx context.Context, username string) (bool, error) {
 	return true, nil
 }
 
-func GetData(ctx context.Context, username string) (*string, error) {
+func HasDataFromUUID(ctx context.Context, uuid string) (bool, error) {
+	value, err := client.Exists(ctx, fmt.Sprintf("uuid:%s", uuid)).Result()
+	if err == redis.Nil {
+		return false, nil
+	} else if err != nil {
+		return false, nil
+	}
+	if value == 0 {
+		return false, nil
+	}
+	return true, nil
+}
+
+func GetDataFromUsername(ctx context.Context, username string) (*string, error) {
 	value, err := client.Get(ctx, fmt.Sprintf("player:%s", username)).Result()
+	if err == redis.Nil {
+		return nil, fmt.Errorf("does not exist")
+	} else if err != nil {
+		return nil, err
+	}
+	return &value, nil
+}
+
+func GetDataFromUUID(ctx context.Context, uuid string) (*string, error) {
+	value, err := client.Get(ctx, fmt.Sprintf("uuid:%s", uuid)).Result()
 	if err == redis.Nil {
 		return nil, fmt.Errorf("does not exist")
 	} else if err != nil {
