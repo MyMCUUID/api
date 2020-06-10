@@ -63,6 +63,10 @@ func GetUUIDFromUsername(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	headImage, err := mojang.GetHeadFromUUID(resp.UUID)
+	if err != nil {
+		fmt.Fprintf(w, ErrorJson(err.Error()))
+		return
+	}
 	buf := new(bytes.Buffer)
 	png.Encode(buf, *headImage)
 	withDashes, err := uuid2.Parse(resp.UUID)
