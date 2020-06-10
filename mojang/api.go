@@ -128,11 +128,11 @@ func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
 func GetHeadFromUUID(uuid string) (*image2.Image, error) {
 	profile, err := GetProfileFromUUID(uuid)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not find player with that username")
 	}
 	image, err := GetHeadFromProfile(*profile)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to get skin for that player")
 	}
 	return image, nil
 }
