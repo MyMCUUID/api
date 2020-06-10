@@ -56,7 +56,7 @@ func GetUUIDFromUsername(username string) (*UUIDResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != 204 {
+	if resp.StatusCode != 200 {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
@@ -82,16 +82,19 @@ func GetProfileFromUUID(uuid string) (*ProfileResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	if resp.StatusCode != 200 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		var profile ProfileResponse
+		err = json.Unmarshal(body, &profile)
+		if err != nil {
+			return nil, err
+		}
+		return &profile, nil
 	}
-	var profile ProfileResponse
-	err = json.Unmarshal(body, &profile)
-	if err != nil {
-		return nil, err
-	}
-	return &profile, nil
+	return nil, fmt.Errorf("no such player")
 }
 
 func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
