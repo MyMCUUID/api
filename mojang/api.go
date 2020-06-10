@@ -56,16 +56,20 @@ func GetUUIDFromUsername(username string) (*UUIDResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	if resp.StatusCode != 204 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(string(body))
+		var uuid UUIDResponse
+		err = json.Unmarshal(body, &uuid)
+		if err != nil {
+			return nil, err
+		}
+		return &uuid, nil
 	}
-	var uuid UUIDResponse
-	err = json.Unmarshal(body, &uuid)
-	if err != nil {
-		return nil, err
-	}
-	return &uuid, nil
+	return nil, fmt.Errorf("no such player")
 }
 
 func GetHeadFromUUID(uuid string) (*image2.Image, error) {
