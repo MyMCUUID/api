@@ -167,6 +167,7 @@ func main(){
 	}
 	if len(os.Getenv("CORS")) > 0 {
 		CORS = os.Getenv("CORS")
+		fmt.Printf("Set cors to %v", CORS)
 	}
 	SetupRedis()
 	r := mux.NewRouter()
