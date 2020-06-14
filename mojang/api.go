@@ -56,7 +56,7 @@ func GetUUIDFromUsername(username string) (*UUIDResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != 200 {
+	if resp.StatusCode == 200 {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
