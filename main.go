@@ -133,12 +133,38 @@ func GetHeadFromUUID(w http.ResponseWriter, r *http.Request){
 			}
 		}
 	}
-	resp, err := mojang.GetHeadFromUUID(uuid)
+	profile, err := mojang.GetProfileFromUUID(uuid)
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		fmt.Fprintf(w, ErrorJson(err.Error()))
+		return
 	}
+	headImage, err := mojang.GetHeadFromProfile(*profile)
+	buf := new(bytes.Buffer)
+	png.Encode(buf, *headImage)
+	if err != nil {
+		fmt.Fprintf(w, ErrorJson(err.Error()))
+		return
+	}
+	bytes, err := json.Marshal(UUIDResponse{
+		UUID:     parsedUUID.String(),
+		Username: profile.Name,
+		Avatar:   fmt.Sprintf("data:image/png;base64,%s", base64.StdEncoding.EncodeToString(buf.Bytes())),
+	})
+	if err != nil {
+		fmt.Fprintf(w, ErrorJson(err.Error()))
+		return
+	}
+	jsonResponse := string(bytes)
+	err = StoreData(r.Context(), profile.Name, parsedUUID.String(), jsonResponse)
+	if err != nil {
+		fmt.Printf("failed to save %s to cache", profile.Name)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, jsonResponse)
 	w.Header().Set("Content-Type", "image/png")
-	png.Encode(w, *resp)
+	png.Encode(w, *headImage)
 }
 
 func GetUsernameFromUUID(w http.ResponseWriter, r *http.Request) {
