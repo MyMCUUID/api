@@ -100,6 +100,38 @@ func GetHeadFromUUID(w http.ResponseWriter, r *http.Request){
 	}
 	vars := mux.Vars(r)
 	uuid := vars["uuid"]
+	parsedUUID, err := uuid2.Parse(uuid)
+	if err != nil {
+		fmt.Fprintf(w, ErrorJson("invalid uuid"))
+		return
+	}
+	if ok, _ := HasDataFromUUID(r.Context(), parsedUUID.String()); ok {
+		resp, err := GetDataFromUUID(r.Context(), parsedUUID.String())
+		if err != nil {
+			fmt.Fprintf(w, ErrorJson(err.Error()))
+			return
+		}
+		if resp != nil {
+			var response *UUIDResponse
+			json.Unmarshal([]byte(*resp), &response)
+			if response != nil {
+				unbased, err := base64.StdEncoding.DecodeString(response.Avatar)
+				if err != nil {
+					fmt.Fprintf(w, ErrorJson(err.Error()))
+					return
+				}
+				r := bytes.NewReader(unbased)
+				im, err := png.Decode(r)
+				if err != nil {
+					fmt.Fprintf(w, ErrorJson(err.Error()))
+					return
+				}
+				w.WriteHeader(http.StatusOK)
+				png.Encode(w, im)
+				return
+			}
+		}
+	}
 	resp, err := mojang.GetHeadFromUUID(uuid)
 	if err != nil {
 		fmt.Fprintf(w, ErrorJson(err.Error()))
