@@ -115,7 +115,8 @@ func GetHeadFromUUID(w http.ResponseWriter, r *http.Request){
 			var response *UUIDResponse
 			json.Unmarshal([]byte(*resp), &response)
 			if response != nil {
-				unbased, err := base64.StdEncoding.DecodeString(response.Avatar)
+				base := response.Avatar[23:]
+				unbased, err := base64.StdEncoding.DecodeString(base)
 				if err != nil {
 					fmt.Fprintf(w, ErrorJson(err.Error()))
 					return
