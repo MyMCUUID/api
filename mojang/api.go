@@ -99,6 +99,10 @@ func GetProfileFromUUID(uuid string) (*ProfileResponse, error) {
 
 func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
 	var texture *TextureInformation
+	propertiesAsString, err := json.Marshal(profile.Properties)
+	if err != nil {
+		fmt.Println(string(propertiesAsString))
+	}
 	for _, val := range profile.Properties {
 		if val.Name == "textures" {
 			textures, err := base64.StdEncoding.DecodeString(profile.Properties[0].Value)
