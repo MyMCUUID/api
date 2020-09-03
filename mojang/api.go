@@ -140,7 +140,7 @@ func GetHeadFromUUID(uuid string) (*image2.Image, error) {
 	}
 	image, err := GetHeadFromProfile(*profile)
 	if err != nil {
-		return nil, fmt.Errorf("unable to get skin for that player")
+		return nil, err
 	}
 	return image, nil
 }
