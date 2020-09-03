@@ -198,12 +198,12 @@ func GetUsernameFromUUID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	headImage, err := mojang.GetHeadFromProfile(*profile)
-	buf := new(bytes.Buffer)
-	png.Encode(buf, *headImage)
 	if err != nil {
 		fmt.Fprintf(w, ErrorJson(err.Error()))
 		return
 	}
+	buf := new(bytes.Buffer)
+	png.Encode(buf, *headImage)
 	bytes, err := json.Marshal(UUIDResponse{
 		UUID:     parsedUUID.String(),
 		Username: profile.Name,
