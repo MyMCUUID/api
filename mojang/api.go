@@ -99,7 +99,7 @@ func GetProfileFromUUID(uuid string) (*ProfileResponse, error) {
 
 func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
 	var texture *TextureInformation
-	propertiesAsString, err := json.Marshal(profile.Properties)
+	propertiesAsString, err := json.Marshal(profile)
 	if err != nil {
 		fmt.Println("Debug Data:")
 		fmt.Println(string(propertiesAsString))
