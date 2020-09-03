@@ -42,8 +42,8 @@ type Texture struct {
 }
 
 type Textures struct {
-	Skin Texture `json:"SKIN"`
-	Cape Texture `json:"CAPE"`
+	Skin *Texture `json:"SKIN"`
+	Cape *Texture `json:"CAPE"`
 }
 
 func GetUUIDFromUsername(username string) (*UUIDResponse, error) {
@@ -118,7 +118,12 @@ func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
 		}
 	}
 	if texture != nil {
-		image, err := GetImage(texture.Textures.Skin.Url)
+		var image io.ReadCloser
+		if texture.Textures.Skin == nil {
+			image, err = GetImage("https://static.wikia.nocookie.net/minecraft_gamepedia/images/3/37/Steve_skin.png/revision/latest?cb=20191231170209")
+		} else {
+			image, err = GetImage(texture.Textures.Skin.Url)
+		}
 		if err != nil {
 			return nil, err
 		}
