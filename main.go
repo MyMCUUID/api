@@ -8,6 +8,7 @@ import (
 	uuid2 "github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"image"
 	"image/png"
 	"mymcuu.id/api/mojang"
 	"net/http"
@@ -167,6 +168,18 @@ func GetHeadFromUUID(w http.ResponseWriter, r *http.Request){
 	png.Encode(w, *headImage)
 }
 
+func getSteveHead() (*image.Image, error){
+	resp, err := mojang.GetUUIDFromUsername("MHF_Steve")
+	if err != nil {
+		return nil, err
+	}
+	headImage, err := mojang.GetHeadFromUUID(resp.UUID)
+	if err != nil {
+		return nil, err
+	}
+	return headImage, nil
+}
+
 func GetUsernameFromUUID(w http.ResponseWriter, r *http.Request) {
 	setupResponse(&w, r)
 	if (*r).Method == "OPTIONS" {
@@ -199,8 +212,11 @@ func GetUsernameFromUUID(w http.ResponseWriter, r *http.Request) {
 	}
 	headImage, err := mojang.GetHeadFromProfile(*profile)
 	if err != nil {
-		fmt.Fprintf(w, ErrorJson(err.Error()))
-		return
+		headImage, err = getSteveHead()
+		if err != nil {
+			fmt.Fprintf(w, ErrorJson(err.Error()))
+			return
+		}
 	}
 	buf := new(bytes.Buffer)
 	png.Encode(buf, *headImage)
