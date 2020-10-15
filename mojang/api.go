@@ -131,8 +131,10 @@ func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
 		if err != nil {
 			return nil, err
 		}
-		aImage = imaging.Crop(aImage, image2.Rect(8, 8, 16, 16))
-		aImage = imaging.Resize(aImage, 200, 200, imaging.NearestNeighbor)
+		headImage := imaging.Crop(aImage, image2.Rect(8, 8, 16, 16))
+		helmImage := imaging.Crop(aImage, image2.Rect(40, 8, 40+8, 8+8))
+		aImage = imaging.Overlay(headImage, helmImage, image2.Pt(0, 0), 1)
+		aImage = imaging.Resize(headImage, 200, 200, imaging.NearestNeighbor)
 		return &aImage, nil
 	}
 	return nil, fmt.Errorf("something went wrong")
