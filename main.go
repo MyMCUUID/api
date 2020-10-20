@@ -163,7 +163,6 @@ func GetHeadFromUUID(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, jsonResponse)
 	w.Header().Set("Content-Type", "image/png")
 	png.Encode(w, *headImage)
 }
