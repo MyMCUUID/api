@@ -179,6 +179,11 @@ func getSteveHead() (*image.Image, error){
 	return headImage, nil
 }
 
+func Status(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "OK")
+}
+
 func GetUsernameFromUUID(w http.ResponseWriter, r *http.Request) {
 	setupResponse(&w, r)
 	if (*r).Method == "OPTIONS" {
@@ -252,6 +257,7 @@ func main(){
 	r.HandleFunc("/username/{username}", GetUUIDFromUsername)
 	r.HandleFunc("/uuid/{uuid}", GetUsernameFromUUID)
 	r.HandleFunc("/head/{uuid}", GetHeadFromUUID)
+	r.HandleFunc("/status", Status)
 	http.Handle("/", r)
 	http.ListenAndServe(":8080", nil)
 }
