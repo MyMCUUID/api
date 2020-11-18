@@ -97,7 +97,7 @@ func GetProfileFromUUID(uuid string) (*ProfileResponse, error) {
 	return nil, fmt.Errorf("no such player")
 }
 
-func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
+func GetSkinFromProfile(profile ProfileResponse) (*image2.Image, error) {
 	var texture *TextureInformation
 	propertiesAsString, err := json.Marshal(profile)
 	if err == nil {
@@ -131,13 +131,29 @@ func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
 		if err != nil {
 			return nil, err
 		}
-		headImage := imaging.Crop(aImage, image2.Rect(8, 8, 16, 16))
-		helmImage := imaging.Crop(aImage, image2.Rect(40, 8, 40+8, 8+8))
-		overlayedImage := imaging.Overlay(headImage, helmImage, image2.Pt(0, 0), 1)
-		aImage = imaging.Resize(overlayedImage, 200, 200, imaging.NearestNeighbor)
 		return &aImage, nil
 	}
 	return nil, fmt.Errorf("something went wrong")
+}
+
+func GetHeadFromProfile(profile ProfileResponse) (*image2.Image, error) {
+	skin, err := GetSkinFromProfile(profile)
+	if err != nil {return nil, err}
+	aImage := *skin
+	headImage := imaging.Crop(aImage, image2.Rect(8, 8, 16, 16))
+	helmImage := imaging.Crop(aImage, image2.Rect(40, 8, 40+8, 8+8))
+	overlayedImage := imaging.Overlay(headImage, helmImage, image2.Pt(0, 0), 1)
+	aImage = imaging.Resize(overlayedImage, 200, 200, imaging.NearestNeighbor)
+	return &aImage, nil
+}
+
+func GetHeadFromSkin(skin *image2.Image) (*image2.Image, error){
+	aImage := *skin
+	headImage := imaging.Crop(aImage, image2.Rect(8, 8, 16, 16))
+	helmImage := imaging.Crop(aImage, image2.Rect(40, 8, 40+8, 8+8))
+	overlayedImage := imaging.Overlay(headImage, helmImage, image2.Pt(0, 0), 1)
+	aImage = imaging.Resize(overlayedImage, 200, 200, imaging.NearestNeighbor)
+	return &aImage, nil
 }
 
 func GetHeadFromUUID(uuid string) (*image2.Image, error) {
@@ -146,6 +162,18 @@ func GetHeadFromUUID(uuid string) (*image2.Image, error) {
 		return nil, fmt.Errorf("could not find player with that username")
 	}
 	image, err := GetHeadFromProfile(*profile)
+	if err != nil {
+		return nil, err
+	}
+	return image, nil
+}
+
+func GetSkinFromUUID(uuid string) (*image2.Image, error){
+	profile, err := GetProfileFromUUID(uuid)
+	if err != nil {
+		return nil, fmt.Errorf("could not find player with that username")
+	}
+	image, err := GetSkinFromProfile(*profile)
 	if err != nil {
 		return nil, err
 	}
