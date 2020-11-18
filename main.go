@@ -181,7 +181,7 @@ func GetSkinFromUUID(w http.ResponseWriter, r *http.Request){
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "image/png")
-	png.Encode(w, *skinImage)
+	w.Write(skinBuf.Bytes())
 }
 
 func GetHeadFromUUID(w http.ResponseWriter, r *http.Request){
