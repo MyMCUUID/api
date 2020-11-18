@@ -144,7 +144,6 @@ func GetSkinFromUUID(w http.ResponseWriter, r *http.Request){
 		}
 	}
 	profile, err := mojang.GetProfileFromUUID(uuid)
-	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		fmt.Fprintf(w, ErrorJson(err.Error()))
 		return
@@ -225,7 +224,6 @@ func GetHeadFromUUID(w http.ResponseWriter, r *http.Request){
 		}
 	}
 	profile, err := mojang.GetProfileFromUUID(uuid)
-	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		fmt.Fprintf(w, ErrorJson(err.Error()))
 		return
